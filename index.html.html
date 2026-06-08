@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bobimixyn 劑量計算工具</title>
+    <style>
+        :root {
+            --primary: #00796b;
+            --bg: #e2e8f0;
+            --text-main: #2c3e50;
+            --accent: #d32f2f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .input-section label {
+            display: block;
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .weight-input {
+            width: 120px;
+            font-size: 28px;
+            padding: 4px;
+            text-align: center;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            color: var(--primary);
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .weight-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* 緊湊結果區塊 */
+        .result-section {
+            display: none;
+            padding: 12px 15px;
+            background: #fff;
+        }
+
+        .res-row {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .res-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+
+        .vial-num {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .q12h {
+            color: var(--accent);
+            font-size: 16px;
+            margin-left: 4px;
+        }
+
+        .vial-detail {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .time-hint {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .arrow-divider {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+            margin: 6px 0;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* 色塊注意事項設計 */
+        .notices {
+            padding: 0 15px 15px 15px;
+            background: #fff;
+        }
+
+        .notice-box {
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        
+        .notice-box:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        Bobimixyn 劑量計算工具
+    </div>
+
+    <div class="input-section">
+        <label for="weight">請輸入病患實際體重 (kg)</label>
+        <input type="number" id="weight" class="weight-input" placeholder="0" oninput="calculate()">
+    </div>
+
+    <div id="results" class="result-section">
+        <div class="res-row">
+            <div class="res-title">起始劑量 (Loading Dose)</div>
+            <div class="vial-num" id="l-vial">0 vial</div>
+            <div class="vial-detail" id="l-detail">(0 KU / 0 mg)</div>
+            <div class="time-hint">建議輸注時間 > 2 小時</div>
+        </div>
+
+        <div class="arrow-divider">↓ 給予起始劑量 12 小時後 ↓</div>
+
+        <div class="res-row">
+            <div class="res-title">維持劑量 (Maintenance Dose)</div>
+            <div class="vial-num"><span id="m-vial">0</span> vial <span class="q12h">Q12H</span></div>
+            <div class="vial-detail" id="m-detail">(0 KU / 0 mg)</div>
+            <div class="time-hint">建議輸注時間 > 1 小時</div>
+        </div>
+    </div>
+
+    <div class="notices">
+        <div class="notice-box" style="background:#f8d7da; color:#721c24; font-weight:bold;">
+            【免責聲明】非官方建立，僅供劑量參考，請務必依照醫師及藥師建議使用。
+        </div>
+        <div class="notice-box" style="background:#fff3cd; color:#856404;">
+            【輸注液量建議】每 vial > 100ml，限水病患至少每 vial > 50ml。
+        </div>
+        <div class="notice-box" style="background:#fff3cd; color:#856404;">
+            【特殊族群】肝腎功能不全、使用 ECMO、HD、CRRT、CAPD 患者，不需調整劑量。
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        const w = parseFloat(document.getElementById('weight').value);
+        const results = document.getElementById('results');
+        
+        if (!w || w < 40) {
+            results.style.display = 'none';
+            return;
+        }
+
+        results.style.display = 'block';
+
+        let l_v, l_ku, l_mg, m_v, m_ku, m_mg;
+
+        // 採用輕症 (經驗性使用 Empirical) 數據邏輯
+        if (w < 50) {
+            l_v = 1.5; l_ku = 800; l_mg = 80;
+            m_v = 1; m_ku = 500; m_mg = 50;
+        } else if (w < 60) {
+            l_v = 2; l_ku = 1000; l_mg = 100;
+            m_v = 1.25; m_ku = 625; m_mg = 62.5;
+        } else if (w < 70) {
+            l_v = 2.5; l_ku = 1200; l_mg = 120;
+            m_v = 1.5; m_ku = 750; m_mg = 75;
+        } else if (w < 80) {
+            l_v = 3; l_ku = 1400; l_mg = 140;
+            m_v = 1.75; m_ku = 875; m_mg = 87.5;
+        } else {
+            l_v = 3.25; l_ku = 1600; l_mg = 160;
+            m_v = 2; m_ku = 1000; m_mg = 100;
+        }
+
+        document.getElementById('l-vial').innerText = l_v + " vial";
+        document.getElementById('l-detail').innerText = `(${l_ku.toLocaleString()} KU / ${l_mg} mg)`;
+        
+        document.getElementById('m-vial').innerText = m_v;
+        document.getElementById('m-detail').innerText = `(${m_ku.toLocaleString()} KU / ${m_mg} mg)`;
+    }
+</script>
+
+</body>
+</html>
