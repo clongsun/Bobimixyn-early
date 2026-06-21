@@ -1,12 +1,119 @@
-/* 讓 placeholder 字體顏色較淡，更有文青質感 */
-input::placeholder {
-    color: #CCC;
-    font-size: 1rem;
-    font-family: 'Noto Serif TC', serif;
-}
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日運勢抽籤</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #FFF; color: #111; 
+            font-family: 'Noto Serif TC', serif; 
+            margin: 0; height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; 
+        }
+        .container { width: 90%; max-width: 500px; text-align: center; }
+        h1 { font-size: 2.2rem; letter-spacing: 0.3rem; margin: 0 0 10px 0; }
+        .instruction { font-size: 1rem; color: #888; margin-bottom: 20px; }
+        
+        .input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        input { 
+            padding: 10px; font-size: 1.5rem; border: 1px solid #111; 
+            text-align: center; width: 25%; font-family: 'Noto Serif TC', serif;
+        }
+        input::placeholder { color: #CCC; font-size: 1rem; }
+        
+        .gender-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .gender-btn { 
+            flex: 1; padding: 15px; font-size: 1.5rem; border: 1px solid #111; 
+            background: #FFF; color: #111; cursor: pointer; transition: 0.3s;
+        }
+        .gender-btn.active { background: #111; color: #FFF; }
+        
+        button { 
+            width: 100%; padding: 15px; font-size: 1.8rem; background: #111; 
+            color: #FFF; border: none; cursor: pointer; margin-bottom: 20px;
+        }
+        
+        #result { height: 160px; display: flex; flex-direction: column; justify-content: center; }
+        .name { font-size: 3.5rem; font-weight: bold; margin: 0; }
+        .desc { font-size: 1.5rem; margin-top: 10px; line-height: 1.4; color: #333; }
+    </style>
+</head>
+<body>
 
-/* 確保輸入框在點擊時的焦點效果更明顯，簡潔有力 */
-input:focus {
-    outline: none;
-    border: 2px solid #000;
-}
+<div class="container">
+    <h1>今日運勢抽籤</h1>
+    <p class="instruction">開始前，請先感謝自己的存在。</p>
+    
+    <div class="input-group">
+        <input type="number" id="year" placeholder="YYYY" min="1900" max="2026">
+        <input type="number" id="month" placeholder="MM" min="1" max="12">
+        <input type="number" id="day" placeholder="DD" min="1" max="31">
+    </div>
+
+    <div class="gender-group">
+        <button class="gender-btn" onclick="setGender('男', this)">男</button>
+        <button class="gender-btn" onclick="setGender('女', this)">女</button>
+    </div>
+
+    <button onclick="checkFortune()">測 運</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    let selectedGender = '';
+    function setGender(g, btn) {
+        selectedGender = g;
+        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    const fortunes = [
+        { name: "奈米吉", weight: 15, desc: "微小的好運。今天每說一次謝謝，好運+1%！" },
+        { name: "小吉", weight: 15, desc: "小確幸等著你，留意身邊的小美好。" },
+        { name: "吉", weight: 15, desc: "今日平安順利，穩穩當當是最好的節奏。" },
+        { name: "大吉", weight: 15, desc: "好事連連，準備好接收驚喜吧！" },
+        { name: "超級大吉", weight: 12, desc: "運勢爆棚！紅綠燈都為你亮綠燈。" },
+        { name: "天降大吉", weight: 10, desc: "主角劇本已就緒，勇敢去發揮吧！" },
+        { name: "錦鯉附體吉", weight: 6, desc: "好運如魚得水，轉發給朋友分享喜悅。" },
+        { name: "閃亮亮吉", weight: 5, desc: "今天特別亮眼，穿上喜歡的衣服出門。" },
+        { name: "連擊吉", weight: 4, desc: "好運連環爆發中，好事一波接一波。" },
+        { name: "宇宙級大吉", weight: 2, desc: "連外星人都羨慕你，多拍幾張自拍。" },
+        { name: "隱藏版大吉", weight: 1, desc: "恭喜發現終極秘密！從現在起，幸福快樂。" }
+    ];
+
+    function checkFortune() {
+        const y = document.getElementById('year').value;
+        const m = document.getElementById('month').value;
+        const d = document.getElementById('day').value;
+        
+        if (!y || !m || !d || !selectedGender) return alert("請完整輸入日期與性別");
+        if (m > 12 || d > 31) return alert("日期格式似乎不太正確喔");
+
+        const today = new Date().toISOString().split('T')[0];
+        const key = `fortune_${y}${m}${d}_${selectedGender}`;
+        let data = JSON.parse(localStorage.getItem(key));
+
+        if (!data || data.date !== today) {
+            let rand = Math.random() * 100;
+            let sum = 0;
+            let resultName = fortunes[fortunes.length - 1].name;
+            for (let f of fortunes) {
+                sum += f.weight;
+                if (rand < sum) { resultName = f.name; break; }
+            }
+            data = { date: today, result: resultName };
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        const fortune = fortunes.find(f => f.name === data.result);
+        document.getElementById('result').innerHTML = `
+            <p class="name">${fortune.name}</p>
+            <p class="desc">${fortune.desc}</p>
+        `;
+    }
+</script>
+</body>
+</html>
