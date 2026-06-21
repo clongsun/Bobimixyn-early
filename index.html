@@ -3,20 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>今日運勢抽籤</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { text-align: center; width: 90%; max-width: 400px; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
-        input, select, button { display: block; width: 100%; margin: 15px 0; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; }
-        button { cursor: pointer; transition: 0.3s; border: 1px solid white; font-weight: bold; }
-        button:hover { background: white; color: black; }
+        body { 
+            background: #FFFFFF; 
+            color: #333333; 
+            font-family: 'Noto Serif TC', serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            line-height: 1.8;
+        }
+        .container { text-align: center; width: 90%; max-width: 500px; }
+        h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.3rem; margin-bottom: 50px; }
         
-        /* 稀有運勢光芒效果 */
-        @keyframes glow { 0% { box-shadow: 0 0 5px #fcd34d, 0 0 10px #fcd34d; } 50% { box-shadow: 0 0 20px #f59e0b, 0 0 30px #f59e0b; } 100% { box-shadow: 0 0 5px #fcd34d, 0 0 10px #fcd34d; } }
-        .rare-glow { animation: glow 2s infinite; border: 1px solid #fcd34d !important; }
+        .glass-card { 
+            background: #FFF; 
+            padding: 50px; 
+            border: 1px solid #E5E5E5; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
         
-        #result { margin-top: 20px; }
-        .thanks { color: #94a3b8; font-style: italic; margin-bottom: 20px; display: none; }
+        input, select, button { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 20px 0; 
+            border: 1px solid #E5E5E5; 
+            background: #FAFAFA; 
+            color: #555555; 
+            font-size: 1.1rem;
+            font-family: 'Noto Serif TC', serif;
+        }
+        
+        button { 
+            background: #333333; 
+            color: white; 
+            cursor: pointer; 
+            transition: 0.5s; 
+            border: none;
+        }
+        button:hover { background: #000000; }
+        
+        .rare-glow { 
+            border: 1px solid #333333 !important;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; 
+        }
+        
+        .result-text { font-size: 1.4rem; margin-top: 20px; }
+        .thanks { color: #888; font-style: italic; margin-bottom: 20px; display: none; }
     </style>
 </head>
 <body>
@@ -37,9 +73,9 @@
 
 <script>
     const fortunes = [
-        { name: "奈米吉", weight: 15, desc: "今天每說一次謝謝，都會為你增加1%的好運唷！" },
-        { name: "小吉", weight: 15, desc: "記得留意身邊的小美好哦" },
-        { name: "吉", weight: 15, desc: "今日平安順利，穩穩當當就是最好的節奏" },
+        { name: "奈米吉", weight: 15, desc: "微小但確實的好運。今天每說一次謝謝，都會為你增加1%的好運唷！" },
+        { name: "小吉", weight: 15, desc: "小確幸等著你。記得留意身邊的小美好哦。" },
+        { name: "吉", weight: 15, desc: "今日平安順利。穩穩當當就是最好的節奏。" },
         { name: "大吉", weight: 15, desc: "好事連連，準備好接收驚喜吧！" },
         { name: "超級大吉", weight: 12, desc: "運勢爆棚！上廁所都有衛生紙、停車都有位....紅綠燈都為你亮綠燈。" },
         { name: "天降大吉", weight: 10, desc: "天選之人，主角劇本已為你準備就緒。勇敢去做一直想做的事吧！" },
@@ -52,46 +88,6 @@
 
     function startFlow() {
         const thanks = document.getElementById('thanks-msg');
-        // 第一次點擊顯示感謝語，第二次才執行運勢
         if (thanks.style.display === 'none') {
             thanks.style.display = 'block';
-            document.getElementById('action-btn').innerText = '確定開始';
-        } else {
-            checkFortune();
-        }
-    }
-
-    function checkFortune() {
-        const birthday = document.getElementById('birthday').value;
-        const gender = document.getElementById('gender').value;
-        if (!birthday) return alert("請選擇生日！");
-
-        const today = new Date().toISOString().split('T')[0];
-        const key = `fortune_${birthday}_${gender}`;
-        let data = JSON.parse(localStorage.getItem(key));
-
-        if (!data || data.date !== today) {
-            let rand = Math.random() * 100;
-            let sum = 0;
-            let resultName = fortunes[fortunes.length - 1].name;
-            for (let f of fortunes) {
-                sum += f.weight;
-                if (rand < sum) { resultName = f.name; break; }
-            }
-            data = { date: today, result: resultName };
-            localStorage.setItem(key, JSON.stringify(data));
-        }
-
-        const fortune = fortunes.find(f => f.name === data.result);
-        const isRare = ["錦鯉附體吉", "閃亮亮吉", "連擊吉", "宇宙級大吉", "隱藏版大吉"].includes(fortune.name);
-        
-        document.getElementById('result').innerHTML = `
-            <div class="glass-card ${isRare ? 'rare-glow' : ''}" style="margin-top:20px;">
-                <h3 style="color: ${isRare ? '#fcd34d' : '#38bdf8'}">${fortune.name}</h3>
-                <p>${fortune.desc}</p>
-            </div>
-        `;
-    }
-</script>
-</body>
-</html>
+            document
