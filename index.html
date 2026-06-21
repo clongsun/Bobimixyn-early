@@ -2,38 +2,64 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>今日運勢 - 時尚科技版</title>
+    <title>今日運勢抽籤</title>
     <style>
-        body { background: #020617; color: white; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
-        input, select, button { margin: 10px; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; }
-        button { cursor: pointer; transition: 0.3s; border: 1px solid white; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { text-align: center; width: 90%; max-width: 400px; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        input, select, button { display: block; width: 100%; margin: 15px 0; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; box-sizing: border-box; }
+        button { cursor: pointer; transition: 0.3s; border: 1px solid white; font-weight: bold; }
         button:hover { background: white; color: black; }
-        #result { margin-top: 20px; font-size: 1.5rem; color: #38bdf8; }
+        
+        /* 稀有運勢光芒效果 */
+        @keyframes glow { 0% { box-shadow: 0 0 5px #fcd34d, 0 0 10px #fcd34d; } 50% { box-shadow: 0 0 20px #f59e0b, 0 0 30px #f59e0b; } 100% { box-shadow: 0 0 5px #fcd34d, 0 0 10px #fcd34d; } }
+        .rare-glow { animation: glow 2s infinite; border: 1px solid #fcd34d !important; }
+        
+        #result { margin-top: 20px; }
+        .thanks { color: #94a3b8; font-style: italic; margin-bottom: 20px; display: none; }
     </style>
 </head>
 <body>
 
-<div class="glass-card">
-    <h2 id="msg">開始前，希望你能先感謝自己的存在。</h2>
-    <input type="date" id="birthday">
-    <select id="gender">
-        <option value="male">男</option>
-        <option value="female">女</option>
-    </select>
-    <button onclick="checkFortune()">開始測運</button>
-    <div id="result"></div>
+<div class="container">
+    <h1>今日運勢抽籤</h1>
+    <div class="glass-card">
+        <input type="date" id="birthday">
+        <select id="gender">
+            <option value="male">男</option>
+            <option value="female">女</option>
+        </select>
+        <p id="thanks-msg" class="thanks">開始前，希望你能先感謝自己的存在。</p>
+        <button onclick="startFlow()" id="action-btn">開始測運</button>
+        <div id="result"></div>
+    </div>
 </div>
 
 <script>
     const fortunes = [
-        { name: "奈米吉", weight: 15 }, { name: "小吉", weight: 15 },
-        { name: "吉", weight: 15 }, { name: "大吉", weight: 15 },
-        { name: "超級大吉", weight: 12 }, { name: "天降大吉", weight: 10 },
-        { name: "錦鯉附體吉", weight: 6 }, { name: "閃亮亮吉", weight: 5 },
-        { name: "連擊吉", weight: 4 }, { name: "宇宙級大吉", weight: 2 },
-        { name: "隱藏版大吉", weight: 1 }
+        { name: "奈米吉", weight: 15, desc: "今天每說一次謝謝，都會為你增加1%的好運唷！" },
+        { name: "小吉", weight: 15, desc: "記得留意身邊的小美好哦" },
+        { name: "吉", weight: 15, desc: "今日平安順利，穩穩當當就是最好的節奏" },
+        { name: "大吉", weight: 15, desc: "好事連連，準備好接收驚喜吧！" },
+        { name: "超級大吉", weight: 12, desc: "運勢爆棚！上廁所都有衛生紙、停車都有位....紅綠燈都為你亮綠燈。" },
+        { name: "天降大吉", weight: 10, desc: "天選之人，主角劇本已為你準備就緒。勇敢去做一直想做的事吧！" },
+        { name: "錦鯉附體吉", weight: 6, desc: "好運如魚得水。轉發這個結果，好運傳給朋友。" },
+        { name: "閃亮亮吉", weight: 5, desc: "今天特別亮眼奪目，記得穿最喜歡的衣服出門！" },
+        { name: "連擊吉", weight: 4, desc: "好運連環爆發中！一波未平一波又起的好事。" },
+        { name: "宇宙級大吉", weight: 2, desc: "連外星人都羨慕你，建議今天多拍幾張自拍。" },
+        { name: "隱藏版大吉", weight: 1, desc: "恭喜發現終極秘密！從此刻開始，只有幸福快樂了！記得保持身心健康。" }
     ];
+
+    function startFlow() {
+        const thanks = document.getElementById('thanks-msg');
+        // 第一次點擊顯示感謝語，第二次才執行運勢
+        if (thanks.style.display === 'none') {
+            thanks.style.display = 'block';
+            document.getElementById('action-btn').innerText = '確定開始';
+        } else {
+            checkFortune();
+        }
+    }
 
     function checkFortune() {
         const birthday = document.getElementById('birthday').value;
@@ -47,15 +73,24 @@
         if (!data || data.date !== today) {
             let rand = Math.random() * 100;
             let sum = 0;
-            let result = fortunes[fortunes.length - 1].name;
+            let resultName = fortunes[fortunes.length - 1].name;
             for (let f of fortunes) {
                 sum += f.weight;
-                if (rand < sum) { result = f.name; break; }
+                if (rand < sum) { resultName = f.name; break; }
             }
-            data = { date: today, result: result };
+            data = { date: today, result: resultName };
             localStorage.setItem(key, JSON.stringify(data));
         }
-        document.getElementById('result').innerText = `今日結果：${data.result}`;
+
+        const fortune = fortunes.find(f => f.name === data.result);
+        const isRare = ["錦鯉附體吉", "閃亮亮吉", "連擊吉", "宇宙級大吉", "隱藏版大吉"].includes(fortune.name);
+        
+        document.getElementById('result').innerHTML = `
+            <div class="glass-card ${isRare ? 'rare-glow' : ''}" style="margin-top:20px;">
+                <h3 style="color: ${isRare ? '#fcd34d' : '#38bdf8'}">${fortune.name}</h3>
+                <p>${fortune.desc}</p>
+            </div>
+        `;
     }
 </script>
 </body>
