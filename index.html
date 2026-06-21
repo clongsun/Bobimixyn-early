@@ -3,72 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>今日運勢抽籤</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { 
             background: #FFFFFF; 
-            color: #333333; 
+            color: #111; 
             font-family: 'Noto Serif TC', serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
             margin: 0; 
-            line-height: 1.8;
         }
-        .container { text-align: center; width: 90%; max-width: 500px; }
-        h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.3rem; margin-bottom: 50px; }
+        .container { width: 90%; max-width: 600px; }
+        h1 { font-size: 2.5rem; letter-spacing: 0.5rem; text-align: center; margin-bottom: 40px; }
         
-        .glass-card { 
-            background: #FFF; 
-            padding: 50px; 
-            border: 1px solid #E5E5E5; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        }
+        /* 移除多餘邊框，讓空間最大化 */
+        .main-box { padding: 20px; }
         
         input, select, button { 
             width: 100%; 
-            padding: 15px; 
-            margin: 20px 0; 
-            border: 1px solid #E5E5E5; 
-            background: #FAFAFA; 
-            color: #555555; 
-            font-size: 1.1rem;
+            padding: 20px; 
+            margin: 15px 0; 
+            border: 2px solid #111; 
+            background: #FFF; 
+            font-size: 1.5rem; 
             font-family: 'Noto Serif TC', serif;
         }
+        button { background: #111; color: #FFF; cursor: pointer; font-weight: bold; }
+        button:hover { background: #444; }
         
-        button { 
-            background: #333333; 
-            color: white; 
-            cursor: pointer; 
-            transition: 0.5s; 
-            border: none;
-        }
-        button:hover { background: #000000; }
+        .result-area { margin-top: 40px; text-align: center; }
+        .result-name { font-size: 3.5rem; font-weight: bold; margin: 0; }
+        .result-desc { font-size: 2rem; margin-top: 20px; line-height: 1.5; }
         
-        .rare-glow { 
-            border: 1px solid #333333 !important;
-            box-shadow: 0 0 30px rgba(0,0,0,0.08) !important; 
-        }
-        
-        .result-text { font-size: 1.4rem; margin-top: 20px; }
-        .thanks { color: #888; font-style: italic; margin-bottom: 20px; display: none; }
+        .rare-glow { border-bottom: 5px solid #111; padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>今日運勢抽籤</h1>
-    <div class="glass-card">
+    
+    <div class="main-box">
+        <p style="font-size: 1.2rem; text-align: center; color: #666;">開始前，請先在心中感謝自己的存在。</p>
         <input type="date" id="birthday">
         <select id="gender">
             <option value="male">男</option>
             <option value="female">女</option>
         </select>
-        <p id="thanks-msg" class="thanks">開始前，希望你能先感謝自己的存在。</p>
-        <button onclick="startFlow()" id="action-btn">開始測運</button>
-        <div id="result"></div>
+        <button onclick="checkFortune()">開始測運</button>
     </div>
+
+    <div id="result" class="result-area"></div>
 </div>
 
 <script>
@@ -86,8 +73,37 @@
         { name: "隱藏版大吉", weight: 1, desc: "恭喜發現終極秘密！從此刻開始，只有幸福快樂了！記得保持身心健康。" }
     ];
 
-    function startFlow() {
-        const thanks = document.getElementById('thanks-msg');
-        if (thanks.style.display === 'none') {
-            thanks.style.display = 'block';
-            document
+    function checkFortune() {
+        const birthday = document.getElementById('birthday').value;
+        const gender = document.getElementById('gender').value;
+        if (!birthday) return alert("請選擇生日！");
+
+        const today = new Date().toISOString().split('T')[0];
+        const key = `fortune_${birthday}_${gender}`;
+        let data = JSON.parse(localStorage.getItem(key));
+
+        if (!data || data.date !== today) {
+            let rand = Math.random() * 100;
+            let sum = 0;
+            let resultName = fortunes[fortunes.length - 1].name;
+            for (let f of fortunes) {
+                sum += f.weight;
+                if (rand < sum) { resultName = f.name; break; }
+            }
+            data = { date: today, result: resultName };
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        const fortune = fortunes.find(f => f.name === data.result);
+        const isRare = ["錦鯉附體吉", "閃亮亮吉", "連擊吉", "宇宙級大吉", "隱藏版大吉"].includes(fortune.name);
+        
+        document.getElementById('result').innerHTML = `
+            <div class="${isRare ? 'rare-glow' : ''}">
+                <p class="result-name">${fortune.name}</p>
+                <p class="result-desc">${fortune.desc}</p>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
