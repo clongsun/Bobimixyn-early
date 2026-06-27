@@ -7,39 +7,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { 
-            background: #FFF; color: #111; 
+            /* 深邃琥珀底色與漸層 */
+            background: radial-gradient(circle at center, #2a2a35 0%, #050505 100%);
+            color: #FFF; 
             font-family: 'Noto Serif TC', serif; 
             margin: 0; height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden; 
         }
-        .container { width: 90%; max-width: 500px; text-align: center; }
-        h1 { font-size: 2.2rem; letter-spacing: 0.3rem; margin: 0 0 10px 0; }
-        .instruction { font-size: 1rem; color: #888; margin-bottom: 20px; }
+        .container { 
+            width: 90%; max-width: 500px; text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05); /* 毛玻璃核心 */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1.2s ease-out forwards;
+        }
+        h1 { font-size: 2rem; letter-spacing: 0.3rem; margin-bottom: 10px; }
+        .instruction { font-size: 0.9rem; color: #DDD; margin-bottom: 25px; }
         
         .input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         input { 
-            padding: 10px; font-size: 1.5rem; border: 1px solid #111; 
-            text-align: center; width: 25%; font-family: 'Noto Serif TC', serif;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #FFF; padding: 12px; font-size: 1.2rem; text-align: center; width: 25%;
+            border-radius: 10px; font-family: 'Noto Serif TC', serif;
         }
-        input::placeholder { color: #CCC; font-size: 1rem; }
-        input:focus { outline: none; border: 2px solid #000; }
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
         
         .gender-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         .gender-btn { 
-            flex: 1; padding: 15px; font-size: 1.5rem; border: 1px solid #111; 
-            background: #FFF; color: #111; cursor: pointer; transition: 0.3s;
+            flex: 1; padding: 12px; font-size: 1.2rem; background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #FFF; cursor: pointer;
+            border-radius: 10px; transition: 0.3s;
         }
-        .gender-btn.active { background: #111; color: #FFF; }
+        .gender-btn.active { background: rgba(255, 255, 255, 0.3); }
         
         button { 
-            width: 100%; padding: 15px; font-size: 1.8rem; background: #111; 
-            color: #FFF; border: none; cursor: pointer; margin-bottom: 20px;
+            width: 100%; padding: 15px; font-size: 1.5rem; background: rgba(255, 255, 255, 0.15); 
+            color: #FFF; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; cursor: pointer;
         }
         
-        #result { height: 160px; display: flex; flex-direction: column; justify-content: center; }
-        .name { font-size: 3.5rem; font-weight: bold; margin: 0; }
-        .desc { font-size: 1.5rem; margin-top: 10px; line-height: 1.4; color: #333; }
+        #result { height: 160px; display: flex; flex-direction: column; justify-content: center; margin-top: 20px; }
+        .name { font-size: 3rem; font-weight: bold; margin: 0; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .desc { font-size: 1.2rem; margin-top: 10px; line-height: 1.4; color: #EEE; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes revealResult { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .result-reveal { animation: revealResult 0.8s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -110,11 +127,15 @@
         }
 
         const fortune = fortunes.find(f => f.name === data.result);
-        document.getElementById('result').innerHTML = `
-            <p class="name">${fortune.name}</p>
-            <p class="desc">${fortune.desc}</p>
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `
+            <div class="result-reveal">
+                <p class="name">${fortune.name}</p>
+                <p class="desc">${fortune.desc}</p>
+            </div>
         `;
     }
 </script>
 </body>
 </html>
+
