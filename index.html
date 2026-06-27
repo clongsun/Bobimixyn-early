@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { 
-            /* 深邃琥珀底色與漸層 */
             background: radial-gradient(circle at center, #2a2a35 0%, #050505 100%);
             color: #FFF; 
             font-family: 'Noto Serif TC', serif; 
@@ -18,7 +17,7 @@
         .container { 
             width: 90%; max-width: 500px; text-align: center;
             padding: 40px;
-            background: rgba(255, 255, 255, 0.05); /* 毛玻璃核心 */
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -26,16 +25,18 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             animation: fadeIn 1.2s ease-out forwards;
         }
-        h1 { font-size: 2rem; letter-spacing: 0.3rem; margin-bottom: 10px; }
-        .instruction { font-size: 0.9rem; color: #DDD; margin-bottom: 25px; }
+        h1 { font-size: 2rem; letter-spacing: 0.3rem; margin-bottom: 5px; }
+        .instruction { font-size: 0.9rem; color: #DDD; margin-bottom: 20px; }
         
+        /* 加入明確的標籤 */
+        .label-text { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px; display: block; text-align: left; }
         .input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         input { 
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #FFF; padding: 12px; font-size: 1.2rem; text-align: center; width: 25%;
+            color: #FFF; padding: 12px; font-size: 1.2rem; text-align: center; width: 33%;
             border-radius: 10px; font-family: 'Noto Serif TC', serif;
         }
-        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        input::placeholder { color: rgba(255, 255, 255, 0.4); font-size: 0.9rem; }
         
         .gender-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         .gender-btn { 
@@ -65,6 +66,7 @@
     <h1>今日運勢抽籤</h1>
     <p class="instruction">開始前，請先感謝自己的存在。</p>
     
+    <span class="label-text">出生年月日</span>
     <div class="input-group">
         <input type="number" id="year" placeholder="YYYY" min="1900" max="2026">
         <input type="number" id="month" placeholder="MM" min="1" max="12">
@@ -88,17 +90,18 @@
         btn.classList.add('active');
     }
 
+    // 將所有權重設為 1，達到機率完全均等
     const fortunes = [
-        { name: "奈米吉", weight: 15, desc: "微小的好運。今天每說一次謝謝，好運+1%！" },
-        { name: "小吉", weight: 15, desc: "小確幸等著你，留意身邊的小美好。" },
-        { name: "吉", weight: 15, desc: "今日平安順利，穩穩當當是最好的節奏。" },
-        { name: "大吉", weight: 15, desc: "好事連連，準備好接收驚喜吧！" },
-        { name: "超級大吉", weight: 12, desc: "運勢爆棚！紅綠燈都為你亮綠燈。" },
-        { name: "天降大吉", weight: 10, desc: "主角劇本已就緒，勇敢去發揮吧！" },
-        { name: "錦鯉附體吉", weight: 6, desc: "好運如魚得水，轉發給朋友分享喜悅。" },
-        { name: "閃亮亮吉", weight: 5, desc: "今天特別亮眼，穿上喜歡的衣服出門。" },
-        { name: "連擊吉", weight: 4, desc: "好運連環爆發中，好事一波接一波。" },
-        { name: "宇宙級大吉", weight: 2, desc: "連外星人都羨慕你，多拍幾張自拍。" },
+        { name: "奈米吉", weight: 1, desc: "微小的好運。今天每說一次謝謝，好運+1%！" },
+        { name: "小吉", weight: 1, desc: "小確幸等著你，留意身邊的小美好。" },
+        { name: "吉", weight: 1, desc: "今日平安順利，穩穩當當是最好的節奏。" },
+        { name: "大吉", weight: 1, desc: "好事連連，準備好接收驚喜吧！" },
+        { name: "超級大吉", weight: 1, desc: "運勢爆棚！紅綠燈都為你亮綠燈。" },
+        { name: "天降大吉", weight: 1, desc: "主角劇本已就緒，勇敢去發揮吧！" },
+        { name: "錦鯉附體吉", weight: 1, desc: "好運如魚得水，轉發給朋友分享喜悅。" },
+        { name: "閃亮亮吉", weight: 1, desc: "今天特別亮眼，穿上喜歡的衣服出門。" },
+        { name: "連擊吉", weight: 1, desc: "好運連環爆發中，好事一波接一波。" },
+        { name: "宇宙級大吉", weight: 1, desc: "連外星人都羨慕你，多拍幾張自拍。" },
         { name: "隱藏版大吉", weight: 1, desc: "恭喜發現終極秘密！從現在起，幸福快樂。" }
     ];
 
@@ -115,14 +118,9 @@
         let data = JSON.parse(localStorage.getItem(key));
 
         if (!data || data.date !== today) {
-            let rand = Math.random() * 100;
-            let sum = 0;
-            let resultName = fortunes[fortunes.length - 1].name;
-            for (let f of fortunes) {
-                sum += f.weight;
-                if (rand < sum) { resultName = f.name; break; }
-            }
-            data = { date: today, result: resultName };
+            // 隨機選取
+            const randomIndex = Math.floor(Math.random() * fortunes.length);
+            data = { date: today, result: fortunes[randomIndex].name };
             localStorage.setItem(key, JSON.stringify(data));
         }
 
@@ -138,4 +136,3 @@
 </script>
 </body>
 </html>
-
