@@ -28,7 +28,6 @@
         h1 { font-size: 2rem; letter-spacing: 0.3rem; margin-bottom: 5px; }
         .instruction { font-size: 0.9rem; color: #DDD; margin-bottom: 20px; }
         
-        /* 加入明確的標籤 */
         .label-text { font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px; display: block; text-align: left; }
         .input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
         input { 
@@ -64,13 +63,13 @@
 
 <div class="container">
     <h1>今日運勢抽籤</h1>
-    <p class="instruction">開始前，請先感謝自己的存在。</p>
+    <p class="instruction">開始前 請先感謝自己的存在</p>
     
     <span class="label-text">出生年月日</span>
     <div class="input-group">
-        <input type="number" id="year" placeholder="YYYY" min="1900" max="2026">
-        <input type="number" id="month" placeholder="MM" min="1" max="12">
-        <input type="number" id="day" placeholder="DD" min="1" max="31">
+        <input type="number" id="year" placeholder="YYYY" onfocus="resetInputs()">
+        <input type="number" id="month" placeholder="MM" onfocus="resetInputs()">
+        <input type="number" id="day" placeholder="DD" onfocus="resetInputs()">
     </div>
 
     <div class="gender-group">
@@ -84,25 +83,30 @@
 
 <script>
     let selectedGender = '';
+    
+    function resetInputs() {
+        document.getElementById('result').innerHTML = '';
+    }
+
     function setGender(g, btn) {
         selectedGender = g;
         document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        resetInputs();
     }
 
-    // 將所有權重設為 1，達到機率完全均等
     const fortunes = [
-        { name: "奈米吉", weight: 1, desc: "微小的好運。今天每說一次謝謝，好運+1%！" },
-        { name: "小吉", weight: 1, desc: "小確幸等著你，留意身邊的小美好。" },
-        { name: "吉", weight: 1, desc: "今日平安順利，穩穩當當是最好的節奏。" },
-        { name: "大吉", weight: 1, desc: "好事連連，準備好接收驚喜吧！" },
-        { name: "超級大吉", weight: 1, desc: "運勢爆棚！紅綠燈都為你亮綠燈。" },
-        { name: "天降大吉", weight: 1, desc: "主角劇本已就緒，勇敢去發揮吧！" },
-        { name: "錦鯉附體吉", weight: 1, desc: "好運如魚得水，轉發給朋友分享喜悅。" },
-        { name: "閃亮亮吉", weight: 1, desc: "今天特別亮眼，穿上喜歡的衣服出門。" },
-        { name: "連擊吉", weight: 1, desc: "好運連環爆發中，好事一波接一波。" },
-        { name: "宇宙級大吉", weight: 1, desc: "連外星人都羨慕你，多拍幾張自拍。" },
-        { name: "隱藏版大吉", weight: 1, desc: "恭喜發現終極秘密！從現在起，幸福快樂。" }
+        { name: "奈米吉", desc: "微小的好運 今天每說一次謝謝 好運加1%" },
+        { name: "小吉", desc: "小確幸等著你 留意身邊的小美好" },
+        { name: "吉", desc: "今日平安順利 穩穩當當是最好的節奏" },
+        { name: "大吉", desc: "好事連連 準備好接收驚喜吧" },
+        { name: "超級大吉", desc: "運勢爆棚 紅綠燈都為你亮綠燈" },
+        { name: "天降大吉", desc: "主角劇本已就緒 勇敢去發揮吧" },
+        { name: "錦鯉附體吉", desc: "好運如魚得水 轉發給朋友分享喜悅" },
+        { name: "閃亮亮吉", desc: "今天特別亮眼 穿上喜歡的衣服出門" },
+        { name: "連擊吉", desc: "好運連環爆發中 好事一波接一波" },
+        { name: "宇宙級大吉", desc: "連外星人都羨慕你 多拍幾張自拍" },
+        { name: "隱藏版大吉", desc: "恭喜發現終極秘密 從現在起 幸福快樂" }
     ];
 
     function checkFortune() {
@@ -118,7 +122,6 @@
         let data = JSON.parse(localStorage.getItem(key));
 
         if (!data || data.date !== today) {
-            // 隨機選取
             const randomIndex = Math.floor(Math.random() * fortunes.length);
             data = { date: today, result: fortunes[randomIndex].name };
             localStorage.setItem(key, JSON.stringify(data));
