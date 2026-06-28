@@ -1,127 +1,555 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>今日運勢占卜</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            background: radial-gradient(circle, #0a141f 0%, #000000 100%);
-            color: #4dc0ff; 
-            font-family: 'Noto Serif TC', serif; 
-            margin: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .main-card {
-            width: 90%; max-width: 450px;
-            padding: 30px;
-            border: 2px solid #00aaff;
-            border-radius: 20px;
-            text-align: center;
-            background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 0, 0, 1) 100%);
-            box-shadow: 0 0 30px rgba(0, 170, 255, 0.3);
-            animation: fadeIn 1.2s ease-out forwards;
-        }
-        h1 { font-size: 1.8rem; color: #fff; letter-spacing: 0.2rem; margin-bottom: 5px; }
-        .instruction { color: #88ccff; font-size: 0.85rem; margin-bottom: 20px; }
-        .label { font-size: 0.75rem; color: #5599cc; margin-top: 15px; display: block; text-align: left; }
-        
-        .input-group { display: flex; gap: 8px; margin-top: 5px; }
-        input { 
-            background: rgba(0, 50, 100, 0.2); border: 1px solid #0066cc; color: #fff;
-            padding: 8px; width: 33%; text-align: center; border-radius: 5px; font-family: 'Noto Serif TC', serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>今日運勢抽籤</title>
+  <!-- v4 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .gender-group { display: flex; gap: 8px; margin: 15px 0; }
-        .gender-btn { 
-            flex: 1; padding: 8px; background: transparent; border: 1px solid #0066cc;
-            color: #5599cc; cursor: pointer; border-radius: 5px; transition: 0.3s;
-        }
-        .gender-btn.active { border-color: #00aaff; color: #00aaff; box-shadow: 0 0 10px rgba(0,170,255,0.4); }
+    :root {
+      --gold: #C9933A;
+      --gold-light: #E8B96A;
+      --gold-dim: #7A5820;
+      --bg: #0A0A0C;
+      --card-bg: #111115;
+      --text: #EDE0C8;
+      --text-dim: #8A7A60;
+    }
 
-        /* 神秘冷光水晶球 */
-        .crystal-ball { 
-            width: 150px; height: 150px;
-            margin: 25px auto;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #e0f7ff, #0077ff, #001133);
-            cursor: pointer;
-            box-shadow: inset -15px -15px 30px rgba(0,0,0,0.5), 0 0 30px rgba(0,170,255,0.7);
-            animation: breathing 4s ease-in-out infinite;
-            transition: transform 0.3s;
-        }
-        .crystal-ball:active { transform: scale(0.95); }
-        
-        #result { border: 1px solid #00aaff; padding: 20px; display: none; margin-top: 20px; background: rgba(0, 100, 200, 0.1); }
-        .result-name { font-size: 2.2rem; color: #00aaff; margin: 0; text-shadow: 0 0 15px rgba(0,170,255,0.6); }
-        .result-desc { color: #fff; margin-top: 10px; font-size: 1.1rem; }
+    html, body {
+      height: 100%;
+    }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes breathing { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
-    </style>
+    body {
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Noto Serif TC', serif;
+      padding: 8px 12px;
+      /* 鍵盤彈出時允許捲動，讓日期欄不被擠掉 */
+      overflow-y: auto;
+      min-height: 100dvh;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid #1E1A12;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      padding: 14px 20px 16px;
+      position: relative;
+      box-shadow: 0 0 60px rgba(180,120,30,0.08), inset 0 1px 0 rgba(255,220,100,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      /* 卡片整體可縮小但不裁切 */
+      my: auto;
+    }
+
+    .card::before {
+      content: '✦';
+      display: block;
+      text-align: center;
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 10px;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(18px, 5vw, 24px);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+    }
+
+    /* ── 出生年月日（標籤 + 三欄在同一行）── */
+    .inputs-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .date-fields {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .date-fields input {
+      min-width: 0;
+      background: #1A1812;
+      border: 1px solid #2E2618;
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      text-align: center;
+      padding: 8px 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .date-fields input#year  { flex: 2.2; }
+    .date-fields input#month { flex: 1.2; }
+    .date-fields input#day   { flex: 1.2; }
+    .date-fields input:focus { border-color: var(--gold-dim); }
+
+    .date-sep {
+      color: var(--gold-dim);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* ── 性別 ── */
+    .gender-row {
+      display: flex;
+      gap: 6px;
+    }
+    .gender-btn {
+      flex: 1;
+      background: #1A1812;
+      border: 1px solid #2E2618;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 14px;
+      letter-spacing: 4px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .gender-btn.active {
+      background: #2A1E0A;
+      border-color: var(--gold-dim);
+      color: var(--gold-light);
+    }
+    .gender-btn:hover:not(.active) { border-color: #3E3020; color: var(--text); }
+
+    /* ── 水晶球區塊 ── */
+    .crystal-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* 讓水晶球彈性縮放，不超出畫面 */
+      flex: 1 1 auto;
+      min-height: 0;
+      justify-content: center;
+    }
+
+    .crystal-label {
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      text-shadow: 0 0 14px rgba(200,150,50,0.6);
+    }
+    .crystal-label::before { content: '✦ '; }
+    .crystal-label::after  { content: ' ✦'; }
+
+    .ball-container {
+      width: min(155px, 38vw);
+      height: min(155px, 38vw);
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .ball-svg {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 20px rgba(200,140,40,0.45));
+      transition: filter 0.3s;
+    }
+    .ball-container:hover .ball-svg { filter: drop-shadow(0 0 36px rgba(220,160,60,0.75)); }
+    .ball-container.spinning .ball-svg { filter: drop-shadow(0 0 50px rgba(240,180,80,1)); }
+
+    @keyframes rotateOrb {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.85; }
+      50%      { opacity: 1; }
+    }
+    .orb-glow { animation: pulse 3s ease-in-out infinite; }
+    .ball-container.spinning .orb-rotate {
+      animation: rotateOrb 1.2s linear infinite;
+      transform-origin: 50% 50%;
+    }
+
+    .stand {
+      width: min(110px, 28vw);
+      margin-top: -8px;
+    }
+    .stand svg { width: 100%; height: 100%; }
+
+    .gems {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      display: flex;
+      width: min(230px, 58vw);
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .gem { font-size: 18px; opacity: 0.7; }
+
+    /* ── 結果面板 ── */
+    .result-panel {
+      border: 1px solid var(--gold-dim);
+      border-radius: 10px;
+      padding: 10px 16px 8px;
+      text-align: center;
+      position: relative;
+      background: #0D0C09;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 76px;
+      overflow: hidden;
+    }
+    .result-panel::before { content: '✦'; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 10px; opacity: 0.6; }
+    .result-panel::after  { content: '✦'; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 10px; opacity: 0.6; }
+
+    .corner-gem { position: absolute; width: 7px; height: 7px; border-radius: 2px; background: var(--gold-dim); opacity: 0.6; }
+    .corner-gem.tl { top: 4px; left: 4px; }
+    .corner-gem.tr { top: 4px; right: 4px; }
+    .corner-gem.bl { bottom: 4px; left: 4px; }
+    .corner-gem.br { bottom: 4px; right: 4px; }
+
+    .result-char {
+      font-size: clamp(30px, 8vw, 42px);
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 20px rgba(200,150,50,0.8);
+      line-height: 1.1;
+      transition: opacity 0.4s;
+      letter-spacing: 4px;
+    }
+    .result-char .stars { font-size: 12px; color: var(--gold-dim); vertical-align: middle; letter-spacing: 8px; }
+    .result-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      margin-top: 4px;
+      line-height: 1.6;
+      transition: opacity 0.4s;
+    }
+    .result-panel.hidden { display: none; }
+    .result-panel.idle .result-char,
+    .result-panel.idle .result-desc { opacity: 0.3; }
+    .result-panel.revealing .result-char,
+    .result-panel.revealing .result-desc { opacity: 0; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .result-panel.done .result-char,
+    .result-panel.done .result-desc { animation: fadeIn 0.6s ease forwards; }
+
+    .sparkle {
+      position: fixed;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--gold-light);
+      pointer-events: none;
+      z-index: 9999;
+      animation: sparkleAnim 1.2s ease-out forwards;
+    }
+    @keyframes sparkleAnim {
+      0%   { opacity: 1; transform: scale(1) translate(0,0); }
+      100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); }
+    }
+  </style>
 </head>
 <body>
+<div class="card">
 
-<div class="main-card">
-    <h1>今日運勢抽籤</h1>
-    <p class="instruction">開始前 請先感謝自己的存在</p>
-    
-    <span class="label">出生年月日</span>
-    <div class="input-group">
-        <input type="number" id="year" placeholder="YYYY" onfocus="resetView()">
-        <input type="number" id="month" placeholder="MM" onfocus="resetView()">
-        <input type="number" id="day" placeholder="DD" onfocus="resetView()">
+  <h1>今日運勢抽籤</h1>
+  <p class="subtitle">開始前 請先感謝自己的存在</p>
+
+  <!-- 出生年月日：標籤 + 三欄同一行 -->
+  <div class="inputs-row">
+    <span class="date-label">出生年月日</span>
+    <div class="date-fields">
+      <input type="text" id="year"  maxlength="4" placeholder="YYYY" inputmode="numeric" />
+      <span class="date-sep">◆</span>
+      <input type="text" id="month" maxlength="2" placeholder="MM"     inputmode="numeric" />
+      <span class="date-sep">◆</span>
+      <input type="text" id="day"   maxlength="2" placeholder="DD"     inputmode="numeric" />
+    </div>
+  </div>
+
+  <div class="gender-row">
+    <button class="gender-btn" id="btn-male"   onclick="setGender('male')">男</button>
+    <button class="gender-btn" id="btn-female" onclick="setGender('female')">女</button>
+  </div>
+
+  <div class="crystal-wrapper">
+    <div class="crystal-label">點擊水晶球 開始占卜</div>
+    <div class="gems">
+      <span class="gem">💎</span>
+      <span class="gem">💠</span>
     </div>
 
-    <div class="gender-group">
-        <button class="gender-btn" onclick="setGender('男', this)">男</button>
-        <button class="gender-btn" onclick="setGender('女', this)">女</button>
+    <div class="ball-container" id="ball" onclick="doDivination()">
+      <svg class="ball-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgGrad" cx="45%" cy="35%" r="65%">
+            <stop offset="0%"   stop-color="#FFF5D0" stop-opacity="0.18"/>
+            <stop offset="40%"  stop-color="#C8820A" stop-opacity="0.60"/>
+            <stop offset="75%"  stop-color="#7A3D00" stop-opacity="0.80"/>
+            <stop offset="100%" stop-color="#1A0800" stop-opacity="0.95"/>
+          </radialGradient>
+          <radialGradient id="highlightGrad" cx="38%" cy="28%" r="35%">
+            <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFE080" stop-opacity="1"/>
+            <stop offset="40%"  stop-color="#FF9020" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#8B3A00" stop-opacity="0.4"/>
+          </radialGradient>
+          <filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
+          <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
+          <clipPath id="ballClip"><circle cx="100" cy="100" r="95"/></clipPath>
+        </defs>
+        <circle cx="100" cy="100" r="95" fill="rgba(160,80,0,0.18)" filter="url(#blur4)"/>
+        <circle cx="100" cy="100" r="93" fill="url(#bgGrad)"/>
+        <g clip-path="url(#ballClip)" class="orb-glow">
+          <ellipse cx="80"  cy="120" rx="55" ry="30" fill="#C07010" opacity="0.22" filter="url(#blur2)"/>
+          <ellipse cx="125" cy="85"  rx="40" ry="22" fill="#E09020" opacity="0.18" filter="url(#blur2)"/>
+          <ellipse cx="70"  cy="75"  rx="30" ry="18" fill="#A05800" opacity="0.20" filter="url(#blur2)"/>
+        </g>
+        <g clip-path="url(#ballClip)" class="orb-rotate">
+          <g transform="translate(100,100)">
+            <line x1="0" y1="-62" x2="0" y2="62"    stroke="#E8A030" stroke-width="1.5" opacity="0.7"/>
+            <line x1="-62" y1="0" x2="62" y2="0"    stroke="#E8A030" stroke-width="1.5" opacity="0.7"/>
+            <line x1="-44" y1="-44" x2="44" y2="44" stroke="#E8A030" stroke-width="1.2" opacity="0.55"/>
+            <line x1="44" y1="-44" x2="-44" y2="44" stroke="#E8A030" stroke-width="1.2" opacity="0.55"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(22.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(67.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(112.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(157.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(202.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(247.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(292.5)"/>
+            <line x1="0" y1="-50" x2="0" y2="-62" stroke="#FFD060" stroke-width="0.8" opacity="0.5" transform="rotate(337.5)"/>
+          </g>
+        </g>
+        <circle cx="100" cy="100" r="14" fill="url(#coreGrad)" filter="url(#blur2)" class="orb-glow"/>
+        <circle cx="100" cy="100" r="7"  fill="#FFE880" opacity="0.95"/>
+        <circle cx="100" cy="100" r="93" fill="url(#highlightGrad)"/>
+        <circle cx="100" cy="100" r="93" fill="none" stroke="#C8900A" stroke-width="1.5" opacity="0.4"/>
+        <circle cx="100" cy="100" r="91" fill="none" stroke="#FFFFFF"  stroke-width="0.5" opacity="0.10"/>
+        <g class="orb-glow">
+          <circle cx="60"  cy="55"  r="1.8" fill="#FFE060" opacity="0.8"/>
+          <circle cx="148" cy="70"  r="1.2" fill="#FFE060" opacity="0.6"/>
+          <circle cx="135" cy="145" r="1.5" fill="#FFE060" opacity="0.7"/>
+          <circle cx="55"  cy="140" r="1.0" fill="#FFE060" opacity="0.5"/>
+          <circle cx="100" cy="40"  r="2.0" fill="#FFFFFF"  opacity="0.5"/>
+        </g>
+      </svg>
     </div>
 
-    <div class="crystal-ball" onclick="checkFortune()"></div>
+    <div class="stand">
+      <svg viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="standGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stop-color="#C8900A"/>
+            <stop offset="50%"  stop-color="#7A5010"/>
+            <stop offset="100%" stop-color="#3A2408"/>
+          </linearGradient>
+        </defs>
+        <path d="M65 0 Q70 18 60 30 L100 30 Q90 18 95 0 Z" fill="url(#standGrad)" opacity="0.9"/>
+        <polygon points="80,26 88,34 80,42 72,34" fill="#C07010" stroke="#E8A030" stroke-width="0.8"/>
+        <path d="M30 50 Q45 30 65 30 L95 30 Q115 30 130 50 Q145 65 148 75 L12 75 Q15 65 30 50Z" fill="url(#standGrad)" opacity="0.95"/>
+        <path d="M40 55 Q30 48 28 58 Q26 68 38 65" fill="none" stroke="#E8A030" stroke-width="1.2" opacity="0.6"/>
+        <path d="M120 55 Q130 48 132 58 Q134 68 122 65" fill="none" stroke="#E8A030" stroke-width="1.2" opacity="0.6"/>
+        <rect x="12" y="73" width="136" height="4" rx="2" fill="#C08010" opacity="0.7"/>
+      </svg>
+    </div>
+  </div>
 
-    <div id="result"></div>
+  <div class="result-panel hidden" id="result">
+    <div class="corner-gem tl"></div>
+    <div class="corner-gem tr"></div>
+    <div class="corner-gem bl"></div>
+    <div class="corner-gem br"></div>
+    <div class="result-char" id="result-char">
+
+    </div>
+    <div class="result-desc" id="result-desc"></div>
+  </div>
+
 </div>
 
 <script>
-    let selectedGender = '';
-    function setGender(g, btn) {
-        selectedGender = g;
-        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        resetView();
+  let gender = '';
+
+  function setGender(g) {
+    gender = g;
+    document.getElementById('btn-male').classList.toggle('active', g === 'male');
+    document.getElementById('btn-female').classList.toggle('active', g === 'female');
+  }
+
+  // 結果已出現時，碰到任何輸入欄 → 全部清空重來
+  document.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('focus', () => {
+      const panel = document.getElementById('result');
+      if (panel.classList.contains('done')) {
+        resetAll();
+      }
+      setTimeout(() => inp.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+    });
+  });
+
+  function resetAll() {
+    document.getElementById('year').value  = '';
+    document.getElementById('month').value = '';
+    document.getElementById('day').value   = '';
+    gender = '';
+    document.getElementById('btn-male').classList.remove('active');
+    document.getElementById('btn-female').classList.remove('active');
+    const panel = document.getElementById('result');
+    panel.className = 'result-panel hidden';
+    clearError();
+  }
+
+  const fortunes = [
+    { char: '大吉', desc: '萬事俱備，東風已至，大膽前行吧！' },
+    { char: '吉',   desc: '今日平安順利 穩穩當當是最好的節奏' },
+    { char: '中吉', desc: '進退有度，保持平常心，好事將近。' },
+    { char: '小吉', desc: '小有收穫，積跬步以至千里，繼續努力。' },
+    { char: '末吉', desc: '稍作沉澱，靜待時機，勿急勿躁。' },
+    { char: '凶',   desc: '今日諸事宜謹慎，守成為上，靜待轉機。' },
+    { char: '大凶', desc: '逆境磨礪心志，沉住氣，黎明前最黑暗。' },
+  ];
+  const weights = [10, 30, 25, 20, 8, 5, 2];
+
+  function pickFortune(year, month, day, gen) {
+    const seed = year * 1000 + month * 50 + day * 3 + (gen === 'female' ? 7 : 0)
+               + new Date().getDate() * 13 + new Date().getMonth() * 31;
+    let hash = seed ^ (seed >> 4);
+    hash = ((hash ^ 0xdeadbeef) + (hash << 4)) >>> 0;
+    hash = hash ^ (hash >> 11);
+    const total = weights.reduce((a,b)=>a+b,0);
+    let r = hash % total;
+    for (let i = 0; i < weights.length; i++) {
+      r -= weights[i];
+      if (r < 0) return fortunes[i];
+    }
+    return fortunes[1];
+  }
+
+  function spawnSparkles(el) {
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top  + rect.height / 2;
+    for (let i = 0; i < 12; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      const angle = Math.random() * 360;
+      const dist  = 50 + Math.random() * 70;
+      s.style.cssText = `left:${cx-2}px;top:${cy-2}px;--tx:${Math.cos(angle*Math.PI/180)*dist}px;--ty:${Math.sin(angle*Math.PI/180)*dist}px;`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1300);
+    }
+  }
+
+  // 驗證日期是否真實存在（含閏年）
+  function isValidDate(year, month, day) {
+    if (year < 1900 || year > new Date().getFullYear()) return false;
+    if (month < 1 || month > 12) return false;
+    if (day < 1) return false;
+    const maxDay = new Date(year, month, 0).getDate(); // 該月最後一天
+    if (day > maxDay) return false;
+    return true;
+  }
+
+  function doDivination() {
+    const ball  = document.getElementById('ball');
+    const panel = document.getElementById('result');
+    const charEl = document.getElementById('result-char');
+    const descEl = document.getElementById('result-desc');
+    if (ball.classList.contains('spinning')) return;
+
+    const yearVal  = document.getElementById('year').value.trim();
+    const monthVal = document.getElementById('month').value.trim();
+    const dayVal   = document.getElementById('day').value.trim();
+
+    // 欄位未填
+    if (!yearVal || !monthVal || !dayVal) {
+      showError('請填寫完整的出生年月日');
+      return;
     }
 
-    function resetView() {
-        document.getElementById('result').style.display = 'none';
+    const year  = parseInt(yearVal);
+    const month = parseInt(monthVal);
+    const day   = parseInt(dayVal);
+
+    // 日期不合法
+    if (!isValidDate(year, month, day)) {
+      showError('日期不存在，請重新確認');
+      return;
     }
 
-    const fortunes = [
-        { name: "奈米吉", desc: "微小的好運 今天每說一次謝謝 好運加1%" },
-        { name: "小吉", desc: "小確幸等著你 留意身邊的小美好" },
-        { name: "吉", desc: "今日平安順利 穩穩當當是最好的節奏" },
-        { name: "大吉", desc: "好事連連 準備好接收驚喜吧" },
-        { name: "超級大吉", desc: "運勢爆棚 紅綠燈都為你亮綠燈" },
-        { name: "天降大吉", desc: "主角劇本已就緒 勇敢去發揮吧" },
-        { name: "錦鯉附體吉", desc: "好運如魚得水 轉發給朋友分享喜悅" },
-        { name: "閃亮亮吉", desc: "今天特別亮眼 穿上喜歡的衣服出門" },
-        { name: "連擊吉", desc: "好運連環爆發中 好事一波接一波" },
-        { name: "宇宙級大吉", desc: "連外星人都羨慕你 多拍幾張自拍" },
-        { name: "隱藏版大吉", desc: "恭喜發現終極秘密 從現在起 幸福快樂" }
-    ];
+    clearError();
+    ball.classList.add('spinning');
+    panel.className = 'result-panel revealing';
+    spawnSparkles(ball);
 
-    function checkFortune() {
-        const y = document.getElementById('year').value;
-        const m = document.getElementById('month').value;
-        const d = document.getElementById('day').value;
-        if (!y || !m || !d || !selectedGender) return alert("請完整輸入日期與性別");
+    setTimeout(() => {
+      const f = pickFortune(year, month, day, gender);
+      charEl.innerHTML = `<span class="stars">✦</span> ${f.char} <span class="stars">✦</span>`;
+      descEl.textContent = f.desc;
+      panel.className = 'result-panel done';
+      ball.classList.remove('spinning');
+      spawnSparkles(document.getElementById('result'));
+    }, 1800);
+  }
 
-        const rand = fortunes[Math.floor(Math.random() * fortunes.length)];
-        const res = document.getElementById('result');
-        res.style.display = 'block';
-        res.innerHTML = `<p class="result-name">${rand.name}</p><p class="result-desc">${rand.desc}</p>`;
+  function showError(msg) {
+    let el = document.getElementById('date-error');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'date-error';
+      el.style.cssText = 'font-size:11px;color:#C05030;letter-spacing:1px;text-align:center;margin-top:-4px;';
+      document.querySelector('.inputs-row').insertAdjacentElement('afterend', el);
     }
+    el.textContent = '⚠ ' + msg;
+  }
+
+  function clearError() {
+    const el = document.getElementById('date-error');
+    if (el) el.textContent = '';
+  }
 </script>
 </body>
 </html>
