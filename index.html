@@ -7,63 +7,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body { 
-            background: #0a0a0a; color: #d4af37; 
+            background: #05080a; color: #4dc0ff; 
             font-family: 'Noto Serif TC', serif; 
             margin: 0; min-height: 100vh;
             display: flex; justify-content: center; align-items: center;
         }
         .main-card {
             width: 90%; max-width: 450px;
-            padding: 40px;
-            border: 2px solid #d4af37;
+            padding: 30px;
+            border: 1px solid #00aaff;
             border-radius: 20px;
             text-align: center;
-            background: linear-gradient(180deg, rgba(20, 20, 20, 0.9) 0%, rgba(0, 0, 0, 1) 100%);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            background: linear-gradient(180deg, rgba(0, 20, 40, 0.9) 0%, rgba(0, 0, 0, 1) 100%);
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
             animation: fadeIn 1.2s ease-out forwards;
         }
-        h1 { font-size: 2rem; color: #fff; letter-spacing: 0.2rem; margin-bottom: 5px; }
-        .instruction { color: #aaa; font-size: 0.9rem; margin-bottom: 25px; }
-        .label { font-size: 0.8rem; color: #888; margin-top: 15px; display: block; text-align: left; }
+        h1 { font-size: 1.8rem; color: #fff; letter-spacing: 0.2rem; margin-bottom: 5px; }
+        .instruction { color: #88ccff; font-size: 0.85rem; margin-bottom: 20px; }
+        .label { font-size: 0.75rem; color: #5599cc; margin-top: 15px; display: block; text-align: left; }
         
-        .input-group { display: flex; gap: 10px; margin-top: 5px; }
+        .input-group { display: flex; gap: 8px; margin-top: 5px; }
         input { 
-            background: transparent; border: 1px solid #444; color: #fff;
-            padding: 10px; width: 33%; text-align: center; border-radius: 5px; font-family: 'Noto Serif TC', serif;
+            background: rgba(0, 50, 100, 0.2); border: 1px solid #0066cc; color: #fff;
+            padding: 8px; width: 33%; text-align: center; border-radius: 5px; font-family: 'Noto Serif TC', serif;
         }
 
-        .gender-group { display: flex; gap: 10px; margin: 20px 0; }
+        .gender-group { display: flex; gap: 8px; margin: 15px 0; }
         .gender-btn { 
-            flex: 1; padding: 10px; background: transparent; border: 1px solid #444;
-            color: #888; cursor: pointer; border-radius: 5px; transition: 0.3s;
+            flex: 1; padding: 8px; background: transparent; border: 1px solid #0066cc;
+            color: #5599cc; cursor: pointer; border-radius: 5px; transition: 0.3s;
         }
-        .gender-btn.active { border-color: #d4af37; color: #d4af37; }
+        .gender-btn.active { border-color: #00aaff; color: #00aaff; box-shadow: 0 0 10px rgba(0,170,255,0.4); }
 
-        /* 純 CSS 繪製的水晶球 */
         .crystal-ball { 
-            width: 150px; height: 150px;
-            margin: 30px auto;
+            width: 130px; height: 130px;
+            margin: 20px auto;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff8dc, #d4af37, #5c4033);
+            background: radial-gradient(circle at 30% 30%, #e0f7ff, #0077ff, #001133);
             cursor: pointer;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.6);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 0 0 25px rgba(0,170,255,0.6);
             animation: breathing 4s ease-in-out infinite;
             transition: transform 0.3s;
         }
         .crystal-ball:active { transform: scale(0.95); }
         
-        #result { border: 1px solid #d4af37; padding: 20px; display: none; margin-top: 20px; }
-        .result-name { font-size: 2.5rem; color: #d4af37; margin: 0; }
-        .result-desc { color: #fff; margin-top: 10px; font-size: 1.1rem; }
+        #result { border: 1px solid #00aaff; padding: 15px; display: none; margin-top: 15px; background: rgba(0, 100, 200, 0.1); }
+        .result-name { font-size: 2rem; color: #00aaff; margin: 0; text-shadow: 0 0 10px rgba(0,170,255,0.5); }
+        .result-desc { color: #fff; margin-top: 8px; font-size: 1rem; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes breathing { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes breathing { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="main-card">
-    <h1>今日運勢抽籤</h1>
+    <h1>今日運勢占卜</h1>
     <p class="instruction">開始前 請先感謝自己的存在</p>
     
     <span class="label">出生年月日</span>
@@ -98,4 +97,29 @@
 
     const fortunes = [
         { name: "奈米吉", desc: "微小的好運 今天每說一次謝謝 好運加1%" },
-        { name: "小吉", desc: "小確幸等著你 留意身邊的小
+        { name: "小吉", desc: "小確幸等著你 留意身邊的小美好" },
+        { name: "吉", desc: "今日平安順利 穩穩當當是最好的節奏" },
+        { name: "大吉", desc: "好事連連 準備好接收驚喜吧" },
+        { name: "超級大吉", desc: "運勢爆棚 紅綠燈都為你亮綠燈" },
+        { name: "天降大吉", desc: "主角劇本已就緒 勇敢去發揮吧" },
+        { name: "錦鯉附體吉", desc: "好運如魚得水 轉發給朋友分享喜悅" },
+        { name: "閃亮亮吉", desc: "今天特別亮眼 穿上喜歡的衣服出門" },
+        { name: "連擊吉", desc: "好運連環爆發中 好事一波接一波" },
+        { name: "宇宙級大吉", desc: "連外星人都羨慕你 多拍幾張自拍" },
+        { name: "隱藏版大吉", desc: "恭喜發現終極秘密 從現在起 幸福快樂" }
+    ];
+
+    function checkFortune() {
+        const y = document.getElementById('year').value;
+        const m = document.getElementById('month').value;
+        const d = document.getElementById('day').value;
+        if (!y || !m || !d || !selectedGender) return alert("請完整輸入日期與性別");
+
+        const rand = fortunes[Math.floor(Math.random() * fortunes.length)];
+        const res = document.getElementById('result');
+        res.style.display = 'block';
+        res.innerHTML = `<p class="result-name">${rand.name}</p><p class="result-desc">${rand.desc}</p>`;
+    }
+</script>
+</body>
+</html>
