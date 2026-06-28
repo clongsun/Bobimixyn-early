@@ -65,7 +65,7 @@
 
     h1 {
       text-align: center;
-      font-size: clamp(18px, 5vw, 24px);
+      font-size: clamp(22px, 6vw, 30px);
       font-weight: 700;
       color: var(--text);
       letter-spacing: 5px;
@@ -73,7 +73,7 @@
 
     .subtitle {
       text-align: center;
-      font-size: 11px;
+      font-size: 13px;
       color: var(--text-dim);
       letter-spacing: 2px;
     }
@@ -86,7 +86,7 @@
     }
 
     .date-label {
-      font-size: 11px;
+      font-size: 13px;
       color: var(--text-dim);
       letter-spacing: 1px;
       white-space: nowrap;
@@ -108,9 +108,9 @@
       border-radius: 8px;
       color: var(--text);
       font-family: inherit;
-      font-size: 14px;
+      font-size: 16px;
       text-align: center;
-      padding: 8px 2px;
+      padding: 10px 2px;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -137,9 +137,9 @@
       border-radius: 8px;
       color: var(--text-dim);
       font-family: inherit;
-      font-size: 14px;
+      font-size: 16px;
       letter-spacing: 4px;
-      padding: 8px;
+      padding: 10px;
       cursor: pointer;
       transition: all 0.25s;
     }
@@ -163,7 +163,7 @@
     }
 
     .crystal-label {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--gold-light);
       letter-spacing: 2px;
       margin-bottom: 6px;
@@ -173,8 +173,8 @@
     .crystal-label::after  { content: ' ✦'; }
 
     .ball-container {
-      width: min(155px, 38vw);
-      height: min(155px, 38vw);
+      width: min(190px, 46vw);
+      height: min(190px, 46vw);
       cursor: pointer;
       border-radius: 50%;
     }
@@ -200,12 +200,6 @@
       animation: rotateOrb 1.2s linear infinite;
       transform-origin: 50% 50%;
     }
-
-    .stand {
-      width: min(110px, 28vw);
-      margin-top: -8px;
-    }
-    .stand svg { width: 100%; height: 100%; }
 
     .gems {
       position: absolute;
@@ -243,7 +237,7 @@
     .corner-gem.br { bottom: 4px; right: 4px; }
 
     .result-char {
-      font-size: clamp(30px, 8vw, 42px);
+      font-size: clamp(36px, 10vw, 52px);
       font-weight: 700;
       color: var(--gold-light);
       text-shadow: 0 0 20px rgba(200,150,50,0.8);
@@ -253,10 +247,10 @@
     }
     .result-char .stars { font-size: 12px; color: var(--gold-dim); vertical-align: middle; letter-spacing: 8px; }
     .result-desc {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-dim);
       letter-spacing: 2px;
-      margin-top: 4px;
+      margin-top: 6px;
       line-height: 1.6;
       transition: opacity 0.4s;
     }
@@ -377,25 +371,7 @@
         </g>
       </svg>
     </div>
-
-    <div class="stand">
-      <svg viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="standGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%"   stop-color="#C8900A"/>
-            <stop offset="50%"  stop-color="#7A5010"/>
-            <stop offset="100%" stop-color="#3A2408"/>
-          </linearGradient>
-        </defs>
-        <path d="M65 0 Q70 18 60 30 L100 30 Q90 18 95 0 Z" fill="url(#standGrad)" opacity="0.9"/>
-        <polygon points="80,26 88,34 80,42 72,34" fill="#C07010" stroke="#E8A030" stroke-width="0.8"/>
-        <path d="M30 50 Q45 30 65 30 L95 30 Q115 30 130 50 Q145 65 148 75 L12 75 Q15 65 30 50Z" fill="url(#standGrad)" opacity="0.95"/>
-        <path d="M40 55 Q30 48 28 58 Q26 68 38 65" fill="none" stroke="#E8A030" stroke-width="1.2" opacity="0.6"/>
-        <path d="M120 55 Q130 48 132 58 Q134 68 122 65" fill="none" stroke="#E8A030" stroke-width="1.2" opacity="0.6"/>
-        <rect x="12" y="73" width="136" height="4" rx="2" fill="#C08010" opacity="0.7"/>
-      </svg>
     </div>
-  </div>
 
   <div class="result-panel hidden" id="result">
     <div class="corner-gem tl"></div>
