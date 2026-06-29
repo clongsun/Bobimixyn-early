@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>今日運勢抽籤</title>
+  <meta property="og:title" content="今日運勢抽籤" />
+  <meta property="og:description" content="開始前，請先感謝自己的存在。看看今天的命運為你準備了什麼。" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
   <!-- v4 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -303,6 +307,7 @@
   <div class="gender-row">
     <button class="gender-btn" id="btn-male"   onclick="setGender('male')">男</button>
     <button class="gender-btn" id="btn-female" onclick="setGender('female')">女</button>
+    <button class="gender-btn" id="btn-equal"  onclick="setGender('equal')">多元性別</button>
   </div>
 
   <div class="crystal-wrapper">
@@ -393,6 +398,7 @@
     gender = g;
     document.getElementById('btn-male').classList.toggle('active', g === 'male');
     document.getElementById('btn-female').classList.toggle('active', g === 'female');
+    document.getElementById('btn-equal').classList.toggle('active', g === 'equal');
   }
 
   // 結果已出現時，碰到任何輸入欄 → 全部清空重來
@@ -413,25 +419,27 @@
     gender = '';
     document.getElementById('btn-male').classList.remove('active');
     document.getElementById('btn-female').classList.remove('active');
+    document.getElementById('btn-equal').classList.remove('active');
     const panel = document.getElementById('result');
     panel.className = 'result-panel hidden';
     clearError();
   }
 
   const fortunes = [
-    { char: '奈米吉',   desc: '好運已悄悄降臨！今天每說一句謝謝，好運就為你增加1%，用你自己的力量，把滿滿的幸運都吸引過來！' },
-    { char: '小吉',     desc: '好事正在悄悄靠近，留意身邊每一個小確幸，那都是屬於你的好運正在發芽，只需要你用心去感受！' },
-    { char: '吉',       desc: '平安就是最高級的奢侈品，今天的你已經贏了很多人，穩穩走就對了！' },
-    { char: '大吉',     desc: '好事今天排排站等你來收！出門記得帶上你的笑容，那是今天最強的護身符。' },
-    { char: '超級大吉', desc: '運勢直接衝破天花板！今天你說什麼都對，做什麼都順，連紅燈都幫你變綠。' },
-    { char: '天降大吉', desc: '老天爺今天欽點你當主角，劇本已寫好，你只需要帥氣地出場就好！' },
-    { char: '錦鯉附體吉', desc: '你天生自帶錦鯉體質，今天走到哪裡好運就帶到哪裡！身邊的每個人都因為你的好氣場而沾光，你就是大家的幸運星！' },
-    { char: '閃亮亮吉', desc: '今天的你自帶濾鏡，怎麼看都好看，怎麼拍都出片，快穿上最喜歡的衣服出門！' },
-    { char: '連擊吉',   desc: '好運連連Combo中！一波接一波，今天的你就像遊戲開了外掛，根本停不下來。' },
+    { char: '奈米吉',     desc: '好運已悄悄降臨！今天每說一句謝謝，好運就為你增加1%，用你自己的力量，把滿滿的幸運都吸引過來！' },
+    { char: '小吉',       desc: '好事正在悄悄靠近，留意身邊每一個小確幸，那都是屬於你的好運正在發芽，只需要你用心去感受！' },
+    { char: '吉',         desc: '平安就是最高級的奢侈品，今天的你已經贏了很多人，穩穩走就對了！' },
+    { char: '大吉',       desc: '好事今天排排站等你來收！出門記得帶上你的笑容，那是今天最強的護身符。' },
+    { char: '超級大吉',   desc: '運勢直接衝破天花板！今天你說什麼都對，做什麼都順，連紅燈都幫你變綠。' },
+    { char: '天降大吉',   desc: '老天爺今天欽點你當主角，劇本已寫好，你只需要帥氣地出場就好！' },
+    { char: '散播歡樂吉', desc: '你天生自帶錦鯉體質，今天走到哪裡好運就帶到哪裡！身邊的每個人都因為你的好氣場而沾光，你就是大家的幸運星！' },
+    { char: '閃亮亮吉',   desc: '今天的你自帶濾鏡，怎麼看都好看，怎麼拍都出片，快穿上最喜歡的衣服出門！' },
+    { char: '好事連連吉', desc: '好事一件接一件排隊來找你，今天的你就像幸運磁鐵，根本來不及接收！慢慢享受這一波甜蜜的幸福轟炸吧🍬' },
     { char: '宇宙級大吉', desc: '連外星人都在羨慕你今天的運勢，整個銀河系都在為你加油，快去征服今天吧！' },
     { char: '隱藏版大吉', desc: '恭喜你解鎖終極隱藏成就！從現在起，你已被宇宙列入VIP名單，幸福快樂永久有效。' },
+    { char: '大富大貴吉', desc: '不得了！你天生自帶大富大貴，注定要享福的命格，萬福金安了你！！！！' },
   ];
-  const weights = [5, 10, 15, 15, 15, 10, 10, 8, 7, 3, 2];
+  const weights = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
   function pickFortune(year, month, day, gen) {
     const seed = year * 1000 + month * 50 + day * 3 + (gen === 'female' ? 7 : 0)
@@ -483,6 +491,12 @@
     const yearVal  = document.getElementById('year').value.trim();
     const monthVal = document.getElementById('month').value.trim();
     const dayVal   = document.getElementById('day').value.trim();
+
+    // 性別未選
+    if (!gender) {
+      showError('請選擇性別後再開始');
+      return;
+    }
 
     // 欄位未填
     if (!yearVal || !monthVal || !dayVal) {
